@@ -1,48 +1,86 @@
-# ADiCo research webpaper
+# ADiCo: Adaptive Diversity Control
 
-A lightweight, three-page research website built with HTML and CSS. The main page has seven question-based sections, with populated DiCo and ESC method pages.
+Project page for **Optimizing Team Behavior via Extremum-seeking Control in Multi-agent Reinforcement Learning**, IEEE Conference on Decision and Control (CDC) 2026.
+
+Svar Rajankumar Patel · Kshitij Jerath
+EXA Lab, University of Massachusetts Lowell
+
+**Website:** [https://Svar7749.github.io/adico/](https://Svar7749.github.io/REPO-NAME/)
+
+ADiCo automatically selects how much behavioral diversity a cooperative multi-agent team needs. It combines Diversity Control (DiCo), which regulates diversity toward a target, with Extremum Seeking Control (ESC), which adjusts that target using team-performance feedback during training.
+
+## About this site
+
+A lightweight, three-page research website built with plain HTML and CSS, with no framework or package installation.
+
+| Page | Content |
+| --- | --- |
+| `index.html` | Main page: motivation, method, experimental setup, results, and future directions |
+| `dico.html` | Method page: measuring and controlling behavioral diversity |
+| `esc.html` | Method page: Extremum Seeking Control and how it updates the diversity target |
+
+Each page has a side navigation that stays fixed on desktop and collapses into a menu on mobile.
 
 ## Preview locally
 
-Extract the download and open `index.html` in your browser. No server or package installation is required.
+Open `index.html` in your browser. After editing a main-page section or the template, run `python3 build.py` (Windows: `python build.py`) and refresh.
 
 ## Publish on GitHub Pages
 
-1. Create a GitHub repository, for example `adico-webpaper`, with a `main` branch. A public repository works with GitHub Free.
-2. Put the **contents** of this folder at the repository root, so `index.html`, `build.py`, and `.github/` are at the top level. Commit all files, including the workflow folder. GitHub Desktop or Git can preserve the entire folder structure.
-3. Open repository **Settings → Pages → Build and deployment**. Set **Source** to **GitHub Actions**.
-4. Open **Actions → Publish webpaper → Run workflow**, choosing `main`. Every subsequent push to `main` also rebuilds and publishes automatically.
-5. After the workflow succeeds, find the website URL in Settings → Pages or the deployment result. A typical project URL is `https://USERNAME.github.io/adico-webpaper/`.
+1. Create a public GitHub repository with a `main` branch.
+2. Put the **contents** of this folder at the repository root, so `index.html`, `build.py`, and `.github/` are at the top level. Commit all files, including the workflow folder.
+3. Open repository **Settings → Pages → Build and deployment**, and set **Source** to **GitHub Actions**.
+4. Open **Actions → Publish webpaper → Run workflow**, choosing `main`. Every later push to `main` rebuilds and publishes automatically.
+5. After the workflow succeeds, the URL appears in **Settings → Pages**. A project repository publishes at `https://USERNAME.github.io/REPO-NAME/`; a repository named `NAME.github.io` in an organization named `NAME` publishes at `https://NAME.github.io/`.
 
-If your default branch has another name, update the branch in `.github/workflows/pages.yml`. This workflow publishes the website files, styles, and assets only; it does not publish the section sources or build script as part of the website.
+If your default branch has another name, update it in `.github/workflows/pages.yml`. The workflow publishes the pages, styles, and assets only, not the section sources or build script.
 
 Reference: [GitHub Pages custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
-## What to edit
+## Project structure
 
 | File or folder | Purpose |
 | --- | --- |
-| `templates/index.html` | Main-page header, navigation, sidebar, and section insertion point |
-| `sections/adico/*.html` | Individual main-page sections, ordered by numeric filename |
-| `dico.html` | DiCo method page |
-| `esc.html` | ESC method page |
-| `styles/theme.css` | Shared colors and typography |
+| `templates/index.html` | Main-page header, side navigation, resource links, and section insertion point |
+| `sections/adico/*.html` | Main-page sections, assembled in numeric filename order |
+| `index.html` | Generated main page; do not edit directly |
+| `dico.html` | DiCo method page, edited directly |
+| `esc.html` | ESC method page, edited directly |
+| `styles/theme.css` | Colors and typography |
 | `styles/layout.css` | Page widths, spacing, and responsive layout |
-| `styles/components.css` | Navigation, figure placeholders, and reusable blocks |
+| `styles/components.css` | Navigation, figures, videos, and reusable blocks |
 | `assets/figures/` | Plots and diagrams |
 | `assets/videos/` | Demonstration clips |
 | `assets/documents/` | Paper and presentation |
 | `build.py` | Assembles the main page and exports static files |
 | `.github/workflows/pages.yml` | Builds and publishes on GitHub Pages |
 
-Edit the source sections or template, then push your changes. GitHub automatically assembles the published main page. For a local preview after editing, run `python3 build.py` (Windows: `python build.py`) and refresh the browser. The checked-in `index.html` is a generated local preview; avoid editing it directly because rebuilding replaces it.
+## Editing
 
-CSS changes need only a browser refresh locally. Update the sidebar in `templates/index.html` when adding, removing, or renaming sections.
+**Main page.** Edit files in `sections/adico/` or `templates/index.html`, then rebuild. `index.html` is regenerated on every build, so direct edits to it are overwritten. When adding, removing, or renaming a section, update the side navigation in `templates/index.html` to match.
 
-## Add content later
+**Method pages.** `dico.html` and `esc.html` are standalone and are not generated. Edit them directly, including their side navigation.
 
-Replace a figure-placeholder block with an image and meaningful alt text. Use relative paths such as `assets/figures/overview.png`, without a leading slash, so links work under a GitHub project URL. Replace resource labels with links once their destinations exist. Keep media files reasonably sized; use externally hosted video embeds for large clips.
+**Styles.** CSS changes need only a browser refresh. If a change does not appear, hard refresh with Ctrl + F5.
+
+**Media.**
+- Use relative paths without a leading slash, such as `assets/figures/Plot-1.svg`, so links work under a project URL.
+- Paths are case-sensitive on GitHub Pages: `Plot-1.svg` and `plot-1.svg` are different files.
+- Avoid spaces in filenames.
+- Prefer SVG for plots and diagrams, and MP4 over GIF for clips, which is much smaller.
+- Keep media files reasonably sized.
 
 ## Export manually
 
 Run `python3 build.py --output _site` to produce a deployment folder. The output directory must be new or empty. It is excluded from Git because the workflow regenerates it.
+
+## Citation
+
+```bibtex
+@inproceedings{patel2026adico,
+  title     = {Optimizing Team Behavior via Extremum-seeking Control in Multi-agent Reinforcement Learning},
+  author    = {Patel, Svar Rajankumar and Jerath, Kshitij},
+  booktitle = {Proceedings of the IEEE Conference on Decision and Control (CDC)},
+  year      = {2026}
+}
+```
