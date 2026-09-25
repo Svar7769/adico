@@ -164,6 +164,14 @@
   </div>
 
   <script>
+    const topbar = document.querySelector('.topbar');
+    const updateTopbarHeight = () => {
+      document.documentElement.style.setProperty('--topbar-height', topbar.getBoundingClientRect().height + 'px');
+    };
+    updateTopbarHeight();
+    new ResizeObserver(updateTopbarHeight).observe(topbar);
+
+
     const box = document.querySelector('.sidenav-box');
     const desktop = window.matchMedia('(min-width: 901px)');
     const links = [...box.querySelectorAll('a')];

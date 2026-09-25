@@ -1,13 +1,16 @@
 /* Shared page layout and responsive rules. */
-.topbar { max-width:1320px; margin:auto; min-height:86px; padding:18px 36px; display:flex; justify-content:space-between; align-items:center; gap:24px; border-bottom:1px solid var(--line); }
+:root { --topbar-height:86px; }
+.topbar { position:sticky; top:0; z-index:30; background:var(--paper); max-width:1320px; margin:auto; min-height:86px; padding:18px 36px; display:flex; justify-content:space-between; align-items:center; gap:24px; border-bottom:1px solid var(--line); }
 .page { display:grid; grid-template-columns:235px minmax(0,850px); gap:65px; max-width:1240px; margin:auto; padding:60px 30px 30px; }
 main { min-width:0; }
 .toc { position:sticky; top:30px; align-self:start; }
 .intro { padding:0 0 50px; }
-section { border-top:1px solid var(--line); padding:40px 0 26px; scroll-margin-top:25px; }
+section { border-top:1px solid var(--line); padding:40px 0 26px; scroll-margin-top:calc(var(--topbar-height) + 25px); }
 figure { margin:28px 0; }
 figure img,figure video { width:100%; height:auto; display:block; object-fit:contain; }
 footer { border-top:1px solid var(--line); padding:30px 0; margin-top:42px; color:var(--muted); font-size:.875rem; }
 @media(max-width:950px) { .page { grid-template-columns:190px minmax(0,1fr); gap:30px; } }
 @media(max-width:720px) { .topbar { padding:16px 20px; flex-wrap:wrap; } .page { display:block; padding:28px 20px; } .toc { position:static; margin-bottom:36px; padding-bottom:20px; border-bottom:1px solid var(--line); } .toc ol { display:grid; grid-template-columns:1fr 1fr; gap:4px 18px; } h1 br { display:none; } }
 @media(max-width:420px) { .toc ol { grid-template-columns:1fr; } }
+
+#main { scroll-margin-top:calc(var(--topbar-height) + 24px); }
