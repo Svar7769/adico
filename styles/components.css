@@ -416,7 +416,7 @@ figcaption {
   .sidenav {
     align-self: start;
     position: sticky;
-    top: 24px;
+    top: calc(var(--topbar-height) + 24px);
     max-height: calc(100dvh - var(--topbar-height) - 48px);
     overflow-y: auto;
   }
