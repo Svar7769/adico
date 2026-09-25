@@ -1,0 +1,65 @@
+<section id="tasks" aria-labelledby="tasks-heading">
+      <p class="section-number">04</p>
+      <h2 id="tasks-heading">Does ADiCo find different diversity levels for different tasks?</h2>
+
+      <p>
+        ADiCo converges to task-specific diversity levels within a single
+        training run, removing the need for a grid search over fixed targets.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-1.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the task results figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-1.svg"
+              alt="System Neural Diversity, mean episode reward, and episode length for Navigation and Balance.">
+        </a>
+        <figcaption>
+          Mean over five seeds. Oscillations in the ADiCo curves result from the ESC perturbation.
+        </figcaption>
+      </figure>
+
+      <p>
+        In Navigation, the diversity selected by ADiCo increases with the
+        number of goals, converging to SND of approximately 0, 1.0, and 1.2
+        for one, two, and three goals, respectively. In Balance, ADiCo
+        maintains SND near zero across all load masses and achieves the
+        highest reward. In contrast, Unconstrained DiCo lacks diversity
+        regulation, allowing diversity to grow and performance to degrade
+        in Balance.
+      </p>
+
+      <figure class="behavior-comparison behavior-comparison--three">
+        <div class="behavior-grid">
+          <div class="behavior-panel">
+            <h3 class="behavior-label">ADiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using ADiCo">
+                <source src="assets/videos/ADiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Grid-Searched DiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using Grid-Searched DiCo">
+                <source src="assets/videos/DiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Unconstrained DiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using Unconstrained DiCo">
+                <source src="assets/videos/UDiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          Balance with load mass 4. ADiCo and Grid-Searched DiCo agents apply coordinated force to the platform; under Unconstrained DiCo, one agent departs from the platform.
+        </figcaption>
+      </figure>
+    </section>

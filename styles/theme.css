@@ -1,0 +1,13 @@
+/* Shared colors and typography. */
+:root { --ink:#172b42; --muted:#536375; --accent:#175ca5; --line:#dce4ed; --soft:#f5f8fc; --paper:#fff; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:Arial,Helvetica,sans-serif; font-size:17px; line-height:1.65; }
+a { color:var(--accent); text-underline-offset:4px; }
+a:focus-visible { outline:3px solid var(--accent); outline-offset:5px; }
+h1,h2 { font-weight:600; line-height:1.18; letter-spacing:-.035em; }
+h1 { font-size:clamp(2.5rem,5vw,4.4rem); margin:20px 0 25px; }
+h2 { font-size:clamp(1.6rem,3vw,2.2rem); margin:0 0 22px; max-width:750px; }
+p { margin:0 0 18px; }
+.eyebrow { font-size:.8rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }

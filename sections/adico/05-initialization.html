@@ -1,0 +1,32 @@
+<section id="initialization" aria-labelledby="initialization-heading">
+      <p class="section-number">05</p>
+      <h2 id="initialization-heading">Does the initial diversity target matter?</h2>
+
+      <p>
+        ADiCo is robust to its initial diversity target. In Navigation with
+        three agents and three goals, initial targets of 0, 0.5, and 1.0
+        converge to the same performance, whereas fixed-target DiCo depends
+        strongly on the chosen value.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-2.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the initialization results figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-2.svg"
+              alt="System Neural Diversity, mean episode reward, and episode length for ADiCo with three initial targets and DiCo with three fixed targets.">
+        </a>
+        <figcaption>
+          Navigation, three agents and three goals. Solid lines show ADiCo from
+          each initial target; dashed lines show DiCo fixed at the same values.
+        </figcaption>
+      </figure>
+
+      <p>
+        All ADiCo initializations converge to SND of approximately 1.2 to
+        1.5 and reach the same final reward. In contrast, the performance
+        of fixed-target DiCo depends on the chosen value: with SND 0, reward
+        plateaus at approximately half that of ADiCo, and with SND 0.5,
+        learning is slower. ADiCo also completes episodes in fewer steps
+        than DiCo at any fixed target.
+      </p>
+    </section>

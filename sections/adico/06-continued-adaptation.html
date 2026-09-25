@@ -1,0 +1,34 @@
+<section id="continued-adaptation" aria-labelledby="continued-adaptation-heading">
+      <p class="section-number">06</p>
+      <h2 id="continued-adaptation-heading">Is continued adaptation useful after diversity settles?</h2>
+
+      <p>
+        We compare closed-loop ADiCo, where ESC runs throughout training, with
+        open-loop ADiCo, where ESC shuts down once diversity settles and the
+        target is held fixed. Continued adaptation yields shorter episodes,
+        most clearly in the three-goal task.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-3.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the continued adaptation figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-3.svg"
+              alt="System Neural Diversity and episode length for closed-loop and open-loop ADiCo in Navigation with one, two, and three goals.">
+        </a>
+        <figcaption>
+          Navigation with one, two, and three goals. Solid lines show closed-loop
+          ADiCo; dashed lines show open-loop ADiCo.
+        </figcaption>
+      </figure>
+
+      <p>
+        Once the ESC is shut down, open-loop ADiCo holds a target close to
+        the grid-searched values, while closed-loop ADiCo continues to
+        oscillate around a slightly higher level. Closed-loop ADiCo also
+        reaches shorter episodes in the three-goal task, at approximately
+        45 steps compared with 51, while differences in the one- and
+        two-goal tasks are small. These results suggest that continued ESC
+        perturbation may act as an implicit exploration mechanism that
+        improves the policy after convergence.
+      </p>
+    </section>

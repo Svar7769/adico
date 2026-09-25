@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How System Neural Diversity measures behavioral diversity and how Diversity Control regulates it.">
+  <title>DiCo: Adaptive Diversity Control</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="wordmark" href="index.html">ADiCo<span>Adaptive Divesity Control</span></a>
+    <nav aria-label="Pages">
+      <a href="index.html">ADiCo</a>
+      <a href="dico.html" aria-current="page">DiCo</a>
+      <a href="esc.html">ESC</a>
+    </nav>
+  </div>
+
+  <div class="page">
+    <aside class="sidenav" aria-label="On this page">
+      <details class="sidenav-box" open>
+        <summary>Contents</summary>
+        <ol>
+          <li><a href="#measure"><span>01</span>Measuring diversity</a></li>
+          <li><a href="#structure"><span>02</span>Team structure</a></li>
+          <li><a href="#control"><span>03</span>Diversity control</a></li>
+          <li><a href="#target"><span>04</span>Choosing the target</a></li>
+        </ol>
+      </details>
+    </aside>
+
+    <main id="main">
+      <header class="intro">
+        <p class="eyebrow">Method: Diversity Control</p>
+        <h1>How is behavioral diversity measured and controlled?</h1>
+      </header>
+
+      <section id="measure" aria-labelledby="measure-heading">
+        <p class="section-number">01</p>
+        <h2 id="measure-heading">How do we measure behavioral diversity?</h2>
+
+        <p>
+          Each agent's policy defines a probability distribution over actions
+          given an observation, so the difference between two agents can be
+          measured as a distance between their action distributions. System
+          Neural Diversity (SND) summarizes team diversity as the average
+          pairwise distance between agent policies across observations. We use
+          the Wasserstein-2 distance, which remains well defined when two
+          distributions do not overlap, whereas the Kullback-Leibler divergence
+          grows without bound.
+        </p>
+
+        <figure class="framework-figure">
+          <a href="assets/figures/dico-w2-vs-kl.png" target="_blank" rel="noopener noreferrer"
+             aria-label="Open the Wasserstein and KL comparison at full size">
+            <img class="framework-image" src="assets/figures/dico-w2-vs-kl.png"
+                 alt="Two Gaussian distributions with shrinking variance: the Wasserstein-2 distance approaches the distance between means, while the KL divergence tends to infinity.">
+          </a>
+          <figcaption>
+            As the variance of two Gaussian policies shrinks, the Wasserstein-2
+            distance approaches the distance between their means, while the KL
+            divergence diverges. From Bettini et al. (2024).
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="structure" aria-labelledby="structure-heading">
+        <p class="section-number">02</p>
+        <h2 id="structure-heading">What does SND reveal about team structure?</h2>
+
+        <p>
+          Beyond a single value, the matrix of pairwise distances shows how
+          diversity is distributed across the team. In Navigation with three
+          agents and three goals, all pairwise distances are uniformly high,
+          indicating three distinct policies. With two goals, two agents share
+          a goal and converge to similar behavior, with a pairwise distance of
+          0.28, while the third agent specializes. This reveals an emergent
+          sub-team structure.
+        </p>
+
+        <figure class="behavior-comparison">
+          <div class="behavior-grid">
+            <div class="behavior-panel">
+              <h3 class="behavior-label">Three goals (SND 1.105)</h3>
+              <div class="behavior-media">
+                <video autoplay loop muted playsinline controls preload="metadata"
+                       aria-label="Three agents navigating to three separate goals">
+                  <source src="assets/videos/dico-nav-3goals.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div class="behavior-panel">
+              <h3 class="behavior-label">Two goals (SND 0.793)</h3>
+              <div class="behavior-media">
+                <video autoplay loop muted playsinline controls preload="metadata"
+                       aria-label="Three agents navigating to two goals, with two agents sharing one goal">
+                  <source src="assets/videos/dico-nav-2goals.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+          <div class="behavior-grid">
+            <div class="behavior-panel">
+              <div class="behavior-media">
+                <img src="assets/figures/dico-snd-matrix-3goals.png"
+                     alt="Pairwise distance matrix for three goals with uniformly high off-diagonal values.">
+              </div>
+            </div>
+            <div class="behavior-panel">
+              <div class="behavior-media">
+                <img src="assets/figures/dico-snd-matrix-2goals.png"
+                     alt="Pairwise distance matrix for two goals with a low distance of 0.28 between agents 1 and 2.">
+              </div>
+            </div>
+          </div>
+          <figcaption>
+            Learned behavior (top) and pairwise Wasserstein-2 distances between
+            agents (bottom). Agent 1 is orange, agent 2 is blue, and agent 3 is
+            green.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="control" aria-labelledby="control-heading">
+        <p class="section-number">03</p>
+        <h2 id="control-heading">How does DiCo control diversity?</h2>
+
+        <p>
+          Diversity Control (DiCo) decomposes each agent's policy into a shared
+          homogeneous component and an agent-specific heterogeneous component.
+          During training, DiCo estimates the SND of the heterogeneous
+          components and rescales them by the ratio of the desired SND to the
+          estimated SND. This constrains the team's behavioral diversity to the
+          desired target while reinforcement learning updates the policies.
+        </p>
+
+        <figure class="framework-figure">
+          <a href="assets/figures/dico-diagram.png" target="_blank" rel="noopener noreferrer"
+             aria-label="Open the DiCo diagram at full size">
+            <img class="framework-image" src="assets/figures/dico-diagram.png"
+                 alt="DiCo pipeline: policy decomposition into shared and agent-specific components, SND computation, and rescaling toward the desired diversity.">
+          </a>
+          <figcaption>
+            DiCo policy decomposition, SND estimation, and rescaling.
+            From Bettini et al. (2024).
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="target" aria-labelledby="target-heading">
+        <p class="section-number">04</p>
+        <h2 id="target-heading">Why does the choice of target matter?</h2>
+
+        <p>
+          DiCo enforces a diversity target but does not choose it. In
+          Navigation with three agents and three goals, a target of SND 1
+          achieves the highest reward and the shortest episodes, as agents
+          cover all goals. A target of 0 forces identical behavior and plateaus
+          at approximately half the reward, while 0.5 learns more slowly. The
+          best target differs across tasks, which motivates
+          <a href="esc.html">selecting it automatically with ESC</a>.
+        </p>
+
+        <figure class="behavior-comparison behavior-comparison--three">
+          <div class="behavior-grid">
+            <div class="behavior-panel">
+              <h3 class="behavior-label">SND 0</h3>
+              <div class="behavior-media">
+                <video autoplay loop muted playsinline controls preload="metadata"
+                       aria-label="Navigation with diversity target zero">
+                  <source src="assets/videos/3a3gSND0.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div class="behavior-panel">
+              <h3 class="behavior-label">SND 0.5</h3>
+              <div class="behavior-media">
+                <video autoplay loop muted playsinline controls preload="metadata"
+                       aria-label="Navigation with diversity target 0.5">
+                  <source src="assets/videos/3a3gSND05.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div class="behavior-panel">
+              <h3 class="behavior-label">SND 1</h3>
+              <div class="behavior-media">
+                <video autoplay loop muted playsinline controls preload="metadata"
+                       aria-label="Navigation with diversity target one">
+                  <source src="assets/videos/3a3gSND1.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </figure>
+
+        <figure class="plot-row">
+          <img src="assets/figures/dico-sweep-reward.png"
+               alt="Mean reward for DiCo with fixed targets of 0, 0.5, and 1.">
+          <img src="assets/figures/dico-sweep-length.png"
+               alt="Episode length for DiCo with fixed targets of 0, 0.5, and 1.">
+          <img src="assets/figures/dico-sweep-snd.png"
+               alt="System diversity for DiCo with fixed targets of 0, 0.5, and 1.">
+          <figcaption>
+            Navigation, three agents and three goals, with DiCo fixed at SND 0,
+            0.5, and 1: mean reward, episode length, and measured diversity.
+          </figcaption>
+        </figure>
+      </section>
+
+      <nav class="next-pages" aria-label="Related pages">
+        <a href="index.html">
+          <span>Main page · ADiCo</span>
+          How does ADiCo adapt diversity to the task?
+          <b aria-hidden="true">←</b>
+        </a>
+        <a href="esc.html">
+          <span>Method · ESC</span>
+          How does performance feedback update the diversity target?
+          <b aria-hidden="true">→</b>
+        </a>
+      </nav>
+      <footer>Svar Rajankumar Patel · Kshitij Jerath · EXA Lab, University of Massachusetts Lowell · 2026</footer>
+    </main>
+  </div>
+
+  <script>
+    const box = document.querySelector('.sidenav-box');
+    const desktop = window.matchMedia('(min-width: 901px)');
+    const links = [...box.querySelectorAll('a')];
+
+    const sync = () => { box.open = desktop.matches; };
+    sync();
+    desktop.addEventListener('change', sync);
+
+    links.forEach(a => a.addEventListener('click', () => {
+      if (!desktop.matches) box.open = false;
+    }));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.toggle('active',
+            l.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<section id="setup" aria-labelledby="setup-heading">
+      <p class="section-number">03</p>
+
+      <h2 id="setup-heading">How do we evaluate ADiCo?</h2>
+
+      <p>
+        DiCo can be used with many multi-agent reinforcement
+        learning algorithms, and ADiCo inherits this because ESC
+        only adjusts the diversity target. In our experiments, we
+        use Independent Proximal Policy Optimization (IPPO) in the
+        Vectorized Multi-Agent Simulator (VMAS). Each run trains
+        for 12 million frames and is repeated over five seeds.
+        After every 60,000 frames, the policies are evaluated, and
+        the mean episode reward drives one ESC target update.
+      </p>
+
+      <p>
+        ADiCo works with any number of agents, and we use three
+        agents in both of our cooperative tasks. In
+        <strong>Navigation</strong>, agents reach goal locations,
+        and we use one to three goals to change how much the agents
+        need to specialize. In <strong>Balance</strong>, agents push
+        a shared platform to carry a load to a goal, and we use load
+        masses of 2, 3, and 4 to make the task harder.
+      </p>
+
+      
+      <figure class="framework-figure">
+        
+          <a
+          href="assets/figures/task-environments.svg"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the Navigation and Balance figure at full size"
+        >
+          <img
+            class="framework-image"
+            src="assets/figures/task-environments.svg"
+            alt="Navigation on the left and Balance on the right,
+                with background colors showing behavioral diversity."
+          >
+        </a>
+
+        <figcaption>
+          Navigation (left) and Balance (right). Yellow marks
+          higher behavioral diversity and purple marks lower.
+        </figcaption>
+      </figure>
+
+      <p>
+        We compare ADiCo with <strong>Grid-Searched DiCo</strong>,
+        which uses the best fixed target found by training one run
+        per candidate, and <strong>Unconstrained DiCo</strong>,
+        which lets diversity emerge freely. All methods share the
+        same algorithm, network, and training budget. We report
+        System Neural Diversity, mean episode reward, and episode
+        length.
+      </p>
+    </section>

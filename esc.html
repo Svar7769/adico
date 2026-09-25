@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How Extremum Seeking Control uses team performance to update the diversity target in ADiCo.">
+  <title>ESC: Adaptive Diversity Control</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="wordmark" href="index.html">ADiCo<span>Adaptive Divesity Control</span></a>
+    <nav aria-label="Pages">
+      <a href="index.html">ADiCo</a>
+      <a href="dico.html">DiCo</a>
+      <a href="esc.html" aria-current="page">ESC</a>
+    </nav>
+  </div>
+
+  <div class="page">
+    <aside class="sidenav" aria-label="On this page">
+      <details class="sidenav-box" open>
+        <summary>Contents</summary>
+        <ol>
+          <li><a href="#what"><span>01</span>Extremum Seeking Control</a></li>
+          <li><a href="#why"><span>02</span>Why ESC</a></li>
+          <li><a href="#gradient"><span>03</span>Gradient estimation</a></li>
+          <li><a href="#adico"><span>04</span>ESC in ADiCo</a></li>
+        </ol>
+      </details>
+    </aside>
+
+    <main id="main">
+      <header class="intro">
+        <p class="eyebrow">Method: Extremum Seeking Control</p>
+        <h1>How does performance feedback update the diversity target?</h1>
+      </header>
+
+      <section id="what" aria-labelledby="what-heading">
+        <p class="section-number">01</p>
+        <h2 id="what-heading">What is Extremum Seeking Control?</h2>
+
+        <p>
+          Extremum Seeking Control (ESC) is a model-free optimization method
+          that drives a parameter toward the extremum of an unknown objective.
+          It applies a small sinusoidal perturbation to the parameter, measures
+          the resulting change in the objective, and extracts a gradient
+          estimate through demodulation. Integrating this estimate moves the
+          parameter toward the optimum without requiring a model of the
+          objective function.
+        </p>
+
+        <figure class="framework-figure">
+          <a href="assets/figures/esc-block-diagram.svg" target="_blank" rel="noopener noreferrer"
+             aria-label="Open the ESC block diagram at full size">
+            <img class="framework-image" src="assets/figures/esc-block-diagram.svg"
+                 alt="Block diagram of Extremum Seeking Control showing the perturbation, plant, high-pass filter, demodulation, low-pass filter, and integrator.">
+          </a>
+          <figcaption>
+            Block diagram of Extremum Seeking Control. Adapted from Wu et al. (2023).
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="why" aria-labelledby="why-heading">
+        <p class="section-number">02</p>
+        <h2 id="why-heading">Why use ESC to select diversity?</h2>
+
+        <p>
+          The relationship between behavioral diversity and team performance
+          has no analytical model and differs across tasks. ESC requires only
+          a measurable performance signal, making it suited to this setting.
+          It also remains effective when the signal is noisy, as is the case
+          for episodic return in multi-agent reinforcement learning, where
+          stochastic environment dynamics cause the measured return to
+          fluctuate between evaluations.
+        </p>
+
+        <figure class="framework-figure">
+          <a href="assets/figures/esc-vs-pid.svg" target="_blank" rel="noopener noreferrer"
+             aria-label="Open the ESC and PID comparison at full size">
+            <img class="framework-image" src="assets/figures/esc-vs-pid.svg"
+                 alt="Tracking performance of ESC and PID controllers on a system with piecewise constant, ramp, and sinusoidal references under measurement noise.">
+          </a>
+          <figcaption>
+            Illustrative ESC and PID comparison on a passthrough system with a
+            time-varying reference and measurement noise. The traces show
+            tracking and cost for this example; they do not establish a
+            general performance ranking between ESC and PID.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="gradient" aria-labelledby="gradient-heading">
+        <p class="section-number">03</p>
+        <h2 id="gradient-heading">How does ESC estimate the gradient?</h2>
+
+        <p>
+          The measured objective first passes through a high-pass filter,
+          which removes its slowly varying offset and isolates the response
+          to the perturbation. Demodulation multiplies this response by the
+          perturbation signal, producing a term whose average is proportional
+          to the local gradient. A low-pass filter then removes the remaining
+          high-frequency components, and an integrator converts the smoothed
+          gradient estimate into a parameter update. The sign of the
+          integrator gain determines whether ESC maximizes or minimizes the
+          objective.
+        </p>
+
+        <figure class="framework-figure">
+          <a href="assets/figures/signal-chain.svg" target="_blank" rel="noopener noreferrer"
+             aria-label="Open the ESC signal chain figure at full size">
+            <img class="framework-image" src="assets/figures/signal-chain.svg"
+                 alt="Full ESC signal chain: parameter convergence, cost, high-pass filter output, demodulated signal, and gradient estimate.">
+          </a>
+          <figcaption>
+            Full ESC signal chain: parameter convergence, cost, high-pass
+            filter output, demodulated signal, and gradient estimate.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="adico" aria-labelledby="adico-heading">
+        <p class="section-number">04</p>
+        <h2 id="adico-heading">How is ESC applied in ADiCo?</h2>
+
+        <p>
+          In ADiCo, the parameter is the diversity target and the objective
+          is the mean episode reward from policy evaluation. After each
+          training cycle, the evaluation return drives one ESC update, and
+          the integrator gain is positive so that ESC maximizes team
+          performance. The updated nominal target, plus the next perturbation,
+          is held fixed throughout the following training cycle while DiCo
+          regulates diversity toward it.
+        </p>
+
+        <p>
+          Two properties of this design require care. The perturbation
+          produces persistent oscillations in diversity and performance, so
+          its amplitude trades gradient accuracy against steady-state
+          variation. The gradient estimate also scales with reward magnitude,
+          so the integrator gain must be matched to the reward range of each
+          task.
+        </p>
+      </section>
+
+      <nav class="next-pages" aria-label="Related pages">
+        <a href="index.html">
+          <span>Main page · ADiCo</span>
+          How does ADiCo adapt diversity to the task?
+          <b aria-hidden="true">←</b>
+        </a>
+        <a href="dico.html">
+          <span>Method · DiCo</span>
+          How is behavioral diversity measured and controlled?
+          <b aria-hidden="true">→</b>
+        </a>
+      </nav>
+      <footer>Svar Rajankumar Patel · Kshitij Jerath · EXA Lab, University of Massachusetts Lowell · 2026</footer>
+    </main>
+  </div>
+
+  <script>
+    const box = document.querySelector('.sidenav-box');
+    const desktop = window.matchMedia('(min-width: 901px)');
+    const links = [...box.querySelectorAll('a')];
+
+    const sync = () => { box.open = desktop.matches; };
+    sync();
+    desktop.addEventListener('change', sync);
+
+    links.forEach(a => a.addEventListener('click', () => {
+      if (!desktop.matches) box.open = false;
+    }));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.toggle('active',
+            l.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

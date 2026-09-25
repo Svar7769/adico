@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ADiCo adapts behavioural diversity in multi-agent reinforcement learning using team-performance feedback.">
+  
+  <title>ADiCo — Adaptive Diversity Control</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="wordmark" href="index.html">ADiCo<span>Adaptive Diversity Control</span></a>
+    <nav aria-label="Pages">
+      <a href="index.html" aria-current="page">ADiCo</a>
+      <a href="dico.html">DiCo</a>
+      <a href="esc.html">ESC</a>
+    </nav>
+  </div>
+
+  <div class="page">
+    <aside class="sidenav" aria-label="On this page">
+      <details class="sidenav-box" open>
+        <summary>Contents</summary>
+        <ol>
+          <li><a href="#diversity"><span>01</span>Motivation</a></li>
+          <li><a href="#idea"><span>02</span>Method</a></li>
+          <li><a href="#setup"><span>03</span>Experimental setup</a></li>
+          <li><a href="#tasks"><span>04</span>Task-specific diversity</a></li>
+          <li><a href="#initialization"><span>05</span>Initial target</a></li>
+          <li><a href="#continued-adaptation"><span>06</span>Continued adaptation</a></li>
+          <li><a href="#future"><span>07</span>Limitations and future work</a></li>
+        </ol>
+      </details>
+    </aside>
+
+    <main id="main">
+      
+      <header class="intro">
+        <p class="eyebrow">ADiCo - Adaptive Diversity Control</p>
+        <h1>Optimizing Team Behavior via Extremum-seeking Control in Multi-agent Reinforcement Learning</h1>
+        
+        
+        <p class="authors">Svar Rajankumar Patel · Kshitij Jerath<br>
+          <span>University of Massachusetts Lowell</span>
+        </p>
+       
+        
+        
+
+        <div class="resources" aria-label="Research resources">
+          <!-- Replace # with the paper PDF link when available. -->
+          <a class="resource-link" href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+              <path d="M14 3v6h6M8 13h8M8 17h6"/>
+            </svg>
+            <span>Paper</span>
+          </a>
+          <!-- Replace # with the code repository link when available. -->
+          <a class="resource-link" href="https://github.com/Svar7769/AD2C-Diversity">
+            <svg class="icon-github" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 .297C5.37.297 0 5.67 0 12.297c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.043-1.61-4.043-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.084 1.838 1.237 1.838 1.237 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.467-1.334-5.467-5.93 0-1.31.467-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23a11.51 11.51 0 0 1 3-.404c1.02.005 2.045.138 3 .404 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+            </svg>
+            <span>Code</span>
+          </a>
+          <!-- Replace # with the presentation link when available. -->
+          <a class="resource-link" href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 3h18M4 3v12h16V3M12 15v6M8 21l4-4 4 4"/>
+              <path d="m7 11 3-3 3 2 4-4"/>
+            </svg>
+            <span>Slides</span>
+          </a>
+        </div>
+      </header>
+    
+    <section id="diversity" aria-labelledby="diversity-heading">
+      <p class="section-number">01</p>
+
+      <h2 id="diversity-heading">
+        How much behavioral diversity does a cooperative team need?
+      </h2>
+
+      <p>
+          In cooperative multi-agent reinforcement learning, agents learn to work together toward a shared objective. However, sharing an objective does not mean that every agent should follow the same policy. Some tasks benefit from similar behaviors, while others require agents to specialize. The challenge is determining how much behavioral diversity helps the team accomplish its task.
+      </p>
+
+      <p>
+        Choosing this level is challenging because the relationship between diversity and team performance is generally unknown. Encouraging more diversity does not necessarily improve cooperation, and manually testing different targets requires repeated training runs.
+      </p>
+
+      
+      <figure class="behavior-comparison">
+        <div class="behavior-grid">
+
+          
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Diversity target: 0</h3>
+
+            <div class="behavior-media">
+              <video
+                autoplay
+                loop
+                muted
+                playsinline
+                controls
+                preload="metadata"
+                aria-label="Three-agent, three-goal Navigation with diversity target zero"
+              >
+                <source
+                  src="assets/videos/3a3gSND0.mp4"
+                  type="video/mp4"
+                >
+                Your browser does not support embedded video.
+                <a href="assets/videos/3a3gSND0.mp4">
+                  Download the demonstration.
+                </a>
+              </video>
+            </div>
+          </div>
+
+          
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Diversity target: 1</h3>
+
+            <div class="behavior-media">
+              <video
+                autoplay
+                loop
+                muted
+                playsinline
+                controls
+                preload="metadata"
+                aria-label="Three-agent, three-goal Navigation with diversity target one"
+              >
+                <source
+                  src="assets/videos/3a3gSND1.mp4"
+                  type="video/mp4"
+                >
+                Your browser does not support embedded video.
+                <a href="assets/videos/3a3gSND1.mp4">
+                  Download the demonstration.
+                </a>
+              </video>
+            </div>
+          </div>
+
+        </div>
+
+        <figcaption>
+          Three agents and three goals, with policies trained at fixed diversity targets of SND = 0 (left) and SND = 1 (right). These examples illustrate the effect of prescribing different diversity levels; the targets are not being adapted during playback.
+        </figcaption>
+      </figure>
+
+      
+      <p>
+        This comparison raises a broader question: how should we choose the diversity target for a task we have not already tuned? A target that supports specialization in this Navigation task may be unnecessary or detrimental when agents benefit from similar behavior. Adaptive Diversity Control (ADiCo) addresses this selection problem using team-performance feedback during training. Diversity Control (DiCo) regulates diversity toward the current target, while Extremum Seeking Control (ESC) gradually adjusts that target to seek better team performance. This provides an alternative to manually comparing repeated training runs at different fixed targets.
+      </p>
+    </section>
+
+<section id="idea" aria-labelledby="idea-heading">
+      <p class="section-number">02</p>
+
+      <h2 id="idea-heading">
+        How does ADiCo address the diversity-selection problem?
+      </h2>
+
+      
+      <p> 
+        ADiCo combines <a href="dico.html">Diversity Control (DiCo)</a> and <a href="esc.html">Extremum Seeking Control (ESC)</a> through a two-timescale framework. On the faster timescale, DiCo regulates behavioral diversity while MARL trains the policies at a fixed diversity target. On the slower timescale, ESC updates that target after training and policy evaluation, before the next training cycle begins. Thus, target adaptation occurs between training cycles rather than during individual policy updates.      
+      </p>
+      
+      <figure class="framework-figure">
+        <a
+          href="assets/figures/adico-framework.svg"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the ADiCo framework diagram at full size"
+        >
+          <img
+            class="framework-image"
+            src="assets/figures/adico-framework.svg"
+            alt="ADiCo architecture: the upper DiCo pipeline regulates
+                policy diversity, while the lower ESC loop uses
+                performance feedback to adjust the diversity target."
+          >
+        </a>
+
+        <figcaption>
+          Two connected timescales: DiCo regulates diversity within
+          MARL training, while ESC updates the desired diversity
+          target between training and evaluation cycles.
+        </figcaption>
+      </figure>
+
+      <p>
+        On the faster timescale, DiCo decomposes each agent’s policy into shared and agent-specific components. It maintains a smoothed estimate of the unscaled agent-specific components’ System Neural Diversity (SND), then rescales their contribution by the ratio of desired diversity to estimated diversity. This regulates policy diversity toward the current target while MARL updates the policies.
+      </p>
+
+      <p>
+        On the slower timescale, ESC uses mean episode reward from policy evaluation to assess the response to small sinusoidal perturbations of the diversity target. A high-pass filter removes slow variations, demodulation relates the remaining response to the perturbation, and a low-pass filter smooths the resulting gradient estimate. The integrator uses this estimate to adjust the nominal setpoint toward locally better performance. The next perturbation is then added to form the target held fixed throughout the following training cycle.
+      </p>
+    </section>
+
+<section id="setup" aria-labelledby="setup-heading">
+      <p class="section-number">03</p>
+
+      <h2 id="setup-heading">How do we evaluate ADiCo?</h2>
+
+      <p>
+        DiCo can be used with many multi-agent reinforcement
+        learning algorithms, and ADiCo inherits this because ESC
+        only adjusts the diversity target. In our experiments, we
+        use Independent Proximal Policy Optimization (IPPO) in the
+        Vectorized Multi-Agent Simulator (VMAS). Each run trains
+        for 12 million frames and is repeated over five seeds.
+        After every 60,000 frames, the policies are evaluated, and
+        the mean episode reward drives one ESC target update.
+      </p>
+
+      <p>
+        ADiCo works with any number of agents, and we use three
+        agents in both of our cooperative tasks. In
+        <strong>Navigation</strong>, agents reach goal locations,
+        and we use one to three goals to change how much the agents
+        need to specialize. In <strong>Balance</strong>, agents push
+        a shared platform to carry a load to a goal, and we use load
+        masses of 2, 3, and 4 to make the task harder.
+      </p>
+
+      
+      <figure class="framework-figure">
+        
+          <a
+          href="assets/figures/task-environments.svg"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the Navigation and Balance figure at full size"
+        >
+          <img
+            class="framework-image"
+            src="assets/figures/task-environments.svg"
+            alt="Navigation on the left and Balance on the right,
+                with background colors showing behavioral diversity."
+          >
+        </a>
+
+        <figcaption>
+          Navigation (left) and Balance (right). Yellow marks
+          higher behavioral diversity and purple marks lower.
+        </figcaption>
+      </figure>
+
+      <p>
+        We compare ADiCo with <strong>Grid-Searched DiCo</strong>,
+        which uses the best fixed target found by training one run
+        per candidate, and <strong>Unconstrained DiCo</strong>,
+        which lets diversity emerge freely. All methods share the
+        same algorithm, network, and training budget. We report
+        System Neural Diversity, mean episode reward, and episode
+        length.
+      </p>
+    </section>
+
+<section id="tasks" aria-labelledby="tasks-heading">
+      <p class="section-number">04</p>
+      <h2 id="tasks-heading">Does ADiCo find different diversity levels for different tasks?</h2>
+
+      <p>
+        ADiCo converges to task-specific diversity levels within a single
+        training run, removing the need for a grid search over fixed targets.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-1.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the task results figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-1.svg"
+              alt="System Neural Diversity, mean episode reward, and episode length for Navigation and Balance.">
+        </a>
+        <figcaption>
+          Mean over five seeds. Oscillations in the ADiCo curves result from the ESC perturbation.
+        </figcaption>
+      </figure>
+
+      <p>
+        In Navigation, the diversity selected by ADiCo increases with the
+        number of goals, converging to SND of approximately 0, 1.0, and 1.2
+        for one, two, and three goals, respectively. In Balance, ADiCo
+        maintains SND near zero across all load masses and achieves the
+        highest reward. In contrast, Unconstrained DiCo lacks diversity
+        regulation, allowing diversity to grow and performance to degrade
+        in Balance.
+      </p>
+
+      <figure class="behavior-comparison behavior-comparison--three">
+        <div class="behavior-grid">
+          <div class="behavior-panel">
+            <h3 class="behavior-label">ADiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using ADiCo">
+                <source src="assets/videos/ADiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Grid-Searched DiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using Grid-Searched DiCo">
+                <source src="assets/videos/DiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Unconstrained DiCo</h3>
+            <div class="behavior-media">
+              <video autoplay loop muted playsinline controls preload="metadata"
+                    aria-label="Balance with load mass 4 using Unconstrained DiCo">
+                <source src="assets/videos/UDiCo_balance_3A4M.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          Balance with load mass 4. ADiCo and Grid-Searched DiCo agents apply coordinated force to the platform; under Unconstrained DiCo, one agent departs from the platform.
+        </figcaption>
+      </figure>
+    </section>
+
+<section id="initialization" aria-labelledby="initialization-heading">
+      <p class="section-number">05</p>
+      <h2 id="initialization-heading">Does the initial diversity target matter?</h2>
+
+      <p>
+        ADiCo is robust to its initial diversity target. In Navigation with
+        three agents and three goals, initial targets of 0, 0.5, and 1.0
+        converge to the same performance, whereas fixed-target DiCo depends
+        strongly on the chosen value.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-2.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the initialization results figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-2.svg"
+              alt="System Neural Diversity, mean episode reward, and episode length for ADiCo with three initial targets and DiCo with three fixed targets.">
+        </a>
+        <figcaption>
+          Navigation, three agents and three goals. Solid lines show ADiCo from
+          each initial target; dashed lines show DiCo fixed at the same values.
+        </figcaption>
+      </figure>
+
+      <p>
+        All ADiCo initializations converge to SND of approximately 1.2 to
+        1.5 and reach the same final reward. In contrast, the performance
+        of fixed-target DiCo depends on the chosen value: with SND 0, reward
+        plateaus at approximately half that of ADiCo, and with SND 0.5,
+        learning is slower. ADiCo also completes episodes in fewer steps
+        than DiCo at any fixed target.
+      </p>
+    </section>
+
+<section id="continued-adaptation" aria-labelledby="continued-adaptation-heading">
+      <p class="section-number">06</p>
+      <h2 id="continued-adaptation-heading">Is continued adaptation useful after diversity settles?</h2>
+
+      <p>
+        We compare closed-loop ADiCo, where ESC runs throughout training, with
+        open-loop ADiCo, where ESC shuts down once diversity settles and the
+        target is held fixed. Continued adaptation yields shorter episodes,
+        most clearly in the three-goal task.
+      </p>
+
+      <figure class="framework-figure">
+        <a href="assets/figures/Plot-3.svg" target="_blank" rel="noopener noreferrer"
+          aria-label="Open the continued adaptation figure at full size">
+          <img class="framework-image" src="assets/figures/Plot-3.svg"
+              alt="System Neural Diversity and episode length for closed-loop and open-loop ADiCo in Navigation with one, two, and three goals.">
+        </a>
+        <figcaption>
+          Navigation with one, two, and three goals. Solid lines show closed-loop
+          ADiCo; dashed lines show open-loop ADiCo.
+        </figcaption>
+      </figure>
+
+      <p>
+        Once the ESC is shut down, open-loop ADiCo holds a target close to
+        the grid-searched values, while closed-loop ADiCo continues to
+        oscillate around a slightly higher level. Closed-loop ADiCo also
+        reaches shorter episodes in the three-goal task, at approximately
+        45 steps compared with 51, while differences in the one- and
+        two-goal tasks are small. These results suggest that continued ESC
+        perturbation may act as an implicit exploration mechanism that
+        improves the policy after convergence.
+      </p>
+    </section>
+
+<section id="future" aria-labelledby="future-heading">
+      <p class="section-number">07</p>
+      <h2 id="future-heading">What are the limitations and future directions?</h2>
+
+      <p>
+        The sinusoidal perturbation required by ESC introduces oscillations
+        in diversity and performance, even after the optimal diversity range
+        is reached. In addition, the gradient estimate scales with reward
+        magnitude, so the integrator gain must be adjusted to the reward
+        range of each task. More fundamentally, ADiCo selects a single
+        scalar diversity target for the entire team and episode, without
+        regard to the current state of the environment.
+      </p>
+
+      <p>
+        Future work will extend ADiCo from a single target to
+        state-dependent diversity, in which the required diversity is
+        expressed as a function of the environment state. Further
+        directions include using ESC to tune pairwise diversity between
+        individual agents, adapting the ESC perturbation amplitude,
+        frequency, and gain during training, and evaluating ADiCo in more
+        complex environments and on physical multi-robot systems.
+      </p>
+    </section>
+
+
+    <nav class="next-pages" aria-label="Method details">
+      <a href="dico.html">
+        <span>Method · DiCo</span>
+        How is behavioral diversity measured and controlled?
+        <b aria-hidden="true">→</b>
+      </a>
+      <a href="esc.html">
+        <span>Method · ESC</span>
+        How does performance feedback update the diversity target?
+        <b aria-hidden="true">→</b>
+      </a>
+    </nav>
+    <footer>Svar Rajankumar Patel · Kshitij Jerath · EXA Lab, University of Massachusetts Lowell · 2026</footer>
+    </main>
+  </div>
+  <script>
+    const box = document.querySelector('.sidenav-box');
+    const desktop = window.matchMedia('(min-width: 901px)');
+    const links = [...box.querySelectorAll('a')];
+
+    const sync = () => { box.open = desktop.matches; };
+    sync();
+    desktop.addEventListener('change', sync);
+
+    links.forEach(a => a.addEventListener('click', () => {
+      if (!desktop.matches) box.open = false;
+    }));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.toggle('active',
+            l.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<section id="diversity" aria-labelledby="diversity-heading">
+      <p class="section-number">01</p>
+
+      <h2 id="diversity-heading">
+        How much behavioral diversity does a cooperative team need?
+      </h2>
+
+      <p>
+          In cooperative multi-agent reinforcement learning, agents learn to work together toward a shared objective. However, sharing an objective does not mean that every agent should follow the same policy. Some tasks benefit from similar behaviors, while others require agents to specialize. The challenge is determining how much behavioral diversity helps the team accomplish its task.
+      </p>
+
+      <p>
+        Choosing this level is challenging because the relationship between diversity and team performance is generally unknown. Encouraging more diversity does not necessarily improve cooperation, and manually testing different targets requires repeated training runs.
+      </p>
+
+      
+      <figure class="behavior-comparison">
+        <div class="behavior-grid">
+
+          
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Diversity target: 0</h3>
+
+            <div class="behavior-media">
+              <video
+                autoplay
+                loop
+                muted
+                playsinline
+                controls
+                preload="metadata"
+                aria-label="Three-agent, three-goal Navigation with diversity target zero"
+              >
+                <source
+                  src="assets/videos/3a3gSND0.mp4"
+                  type="video/mp4"
+                >
+                Your browser does not support embedded video.
+                <a href="assets/videos/3a3gSND0.mp4">
+                  Download the demonstration.
+                </a>
+              </video>
+            </div>
+          </div>
+
+          
+          <div class="behavior-panel">
+            <h3 class="behavior-label">Diversity target: 1</h3>
+
+            <div class="behavior-media">
+              <video
+                autoplay
+                loop
+                muted
+                playsinline
+                controls
+                preload="metadata"
+                aria-label="Three-agent, three-goal Navigation with diversity target one"
+              >
+                <source
+                  src="assets/videos/3a3gSND1.mp4"
+                  type="video/mp4"
+                >
+                Your browser does not support embedded video.
+                <a href="assets/videos/3a3gSND1.mp4">
+                  Download the demonstration.
+                </a>
+              </video>
+            </div>
+          </div>
+
+        </div>
+
+        <figcaption>
+          Three agents and three goals, with policies trained at fixed diversity targets of SND = 0 (left) and SND = 1 (right). These examples illustrate the effect of prescribing different diversity levels; the targets are not being adapted during playback.
+        </figcaption>
+      </figure>
+
+      
+      <p>
+        This comparison raises a broader question: how should we choose the diversity target for a task we have not already tuned? A target that supports specialization in this Navigation task may be unnecessary or detrimental when agents benefit from similar behavior. Adaptive Diversity Control (ADiCo) addresses this selection problem using team-performance feedback during training. Diversity Control (DiCo) regulates diversity toward the current target, while Extremum Seeking Control (ESC) gradually adjusts that target to seek better team performance. This provides an alternative to manually comparing repeated training runs at different fixed targets.
+      </p>
+    </section>

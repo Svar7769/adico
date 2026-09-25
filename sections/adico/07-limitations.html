@@ -1,0 +1,24 @@
+<section id="future" aria-labelledby="future-heading">
+      <p class="section-number">07</p>
+      <h2 id="future-heading">What are the limitations and future directions?</h2>
+
+      <p>
+        The sinusoidal perturbation required by ESC introduces oscillations
+        in diversity and performance, even after the optimal diversity range
+        is reached. In addition, the gradient estimate scales with reward
+        magnitude, so the integrator gain must be adjusted to the reward
+        range of each task. More fundamentally, ADiCo selects a single
+        scalar diversity target for the entire team and episode, without
+        regard to the current state of the environment.
+      </p>
+
+      <p>
+        Future work will extend ADiCo from a single target to
+        state-dependent diversity, in which the required diversity is
+        expressed as a function of the environment state. Further
+        directions include using ESC to tune pairwise diversity between
+        individual agents, adapting the ESC perturbation amplitude,
+        frequency, and gain during training, and evaluating ADiCo in more
+        complex environments and on physical multi-robot systems.
+      </p>
+    </section>

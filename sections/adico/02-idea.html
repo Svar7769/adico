@@ -1,0 +1,43 @@
+<section id="idea" aria-labelledby="idea-heading">
+      <p class="section-number">02</p>
+
+      <h2 id="idea-heading">
+        How does ADiCo address the diversity-selection problem?
+      </h2>
+
+      
+      <p> 
+        ADiCo combines <a href="dico.html">Diversity Control (DiCo)</a> and <a href="esc.html">Extremum Seeking Control (ESC)</a> through a two-timescale framework. On the faster timescale, DiCo regulates behavioral diversity while MARL trains the policies at a fixed diversity target. On the slower timescale, ESC updates that target after training and policy evaluation, before the next training cycle begins. Thus, target adaptation occurs between training cycles rather than during individual policy updates.      
+      </p>
+      
+      <figure class="framework-figure">
+        <a
+          href="assets/figures/adico-framework.svg"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the ADiCo framework diagram at full size"
+        >
+          <img
+            class="framework-image"
+            src="assets/figures/adico-framework.svg"
+            alt="ADiCo architecture: the upper DiCo pipeline regulates
+                policy diversity, while the lower ESC loop uses
+                performance feedback to adjust the diversity target."
+          >
+        </a>
+
+        <figcaption>
+          Two connected timescales: DiCo regulates diversity within
+          MARL training, while ESC updates the desired diversity
+          target between training and evaluation cycles.
+        </figcaption>
+      </figure>
+
+      <p>
+        On the faster timescale, DiCo decomposes each agent’s policy into shared and agent-specific components. It maintains a smoothed estimate of the unscaled agent-specific components’ System Neural Diversity (SND), then rescales their contribution by the ratio of desired diversity to estimated diversity. This regulates policy diversity toward the current target while MARL updates the policies.
+      </p>
+
+      <p>
+        On the slower timescale, ESC uses mean episode reward from policy evaluation to assess the response to small sinusoidal perturbations of the diversity target. A high-pass filter removes slow variations, demodulation relates the remaining response to the perturbation, and a low-pass filter smooths the resulting gradient estimate. The integrator uses this estimate to adjust the nominal setpoint toward locally better performance. The next perturbation is then added to form the target held fixed throughout the following training cycle.
+      </p>
+    </section>
